@@ -322,6 +322,78 @@ class HealthRecommendationsService {
     return recs;
   }
 
+  /// Turns a sugar amount (grams, per 100g / per serving — caller decides)
+  /// into a plain-language verdict: is this too sweet for THIS person,
+  /// given their health profile, compared against a recommended daily
+  /// sugar limit.
+  ///
+  /// Returns a map with:
+  ///   sugarG          - the amount that was checked
+  ///   dailyLimitG     - the person's recommended daily sugar limit
+  ///   percentOfLimit  - what % of that daily limit this amount uses
+  ///   verdict         - short plain-language label
+  ///   detail          - one extra sentence of explanation
+  ///   level           - 'good' | 'moderate' | 'high' (for color/traffic-light UI)
+  ///   emoji           - matching emoji
+  static Map<String, dynamic> getSugarVerdict(
+    double sugarG,
+    HealthProfile health,
+  ) {
+    final dailyLimitG = getRecommendedDailySugarG(health);
+    final percentOfLimit = dailyLimitG > 0 ? (sugarG / dailyLimitG) * 100 : 0.0;
+
+    String verdict;
+    String detail;
+    String level;
+    String emoji;
+
+    if (percentOfLimit < 25) {
+      verdict = 'Not too sweet for you';
+      detail = 'This uses a small slice of your daily sugar limit.';
+      level = 'good';
+      emoji = '🟢';
+    } else if (percentOfLimit < 60) {
+      verdict = 'A bit sweet — fine in this amount';
+      detail = 'Keep an eye on other sugary food today.';
+      level = 'moderate';
+      emoji = '🟡';
+    } else {
+      verdict = 'Too sweet for you right now';
+      detail = 'This alone uses more than half your daily sugar limit.';
+      level = 'high';
+      emoji = '🔴';
+    }
+
+    return {
+      'sugarG': sugarG,
+      'dailyLimitG': dailyLimitG,
+      'percentOfLimit': percentOfLimit.clamp(0, 999),
+      'verdict': verdict,
+      'detail': detail,
+      'level': level,
+      'emoji': emoji,
+    };
+  }
+
+  /// The recommended daily sugar limit (in grams) for this person.
+  /// If they have multiple health conditions, uses the most conservative
+  /// (lowest) limit among them. Falls back to the general population
+  /// guideline (50g/day, WHO upper limit) if no conditions are set.
+  static double getRecommendedDailySugarG(HealthProfile health) {
+    if (health.conditions.isEmpty || health.conditions.contains(HealthCondition.none)) {
+      return (DailyIntake.forCondition(HealthCondition.none).limits['sugar_g'] as num)
+          .toDouble();
+    }
+
+    final limits = health.conditions
+        .map((c) => (DailyIntake.forCondition(c).limits['sugar_g'] as num?)?.toDouble())
+        .whereType<double>()
+        .toList();
+
+    if (limits.isEmpty) return 50;
+    return limits.reduce((a, b) => a < b ? a : b);
+  }
+
   static Map<String, dynamic> getDailyServingRecommendation(
     HealthProfile health,
     String itemName,

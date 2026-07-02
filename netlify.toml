@@ -1,0 +1,14 @@
+[build]
+  command = "git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter_sdk && export PATH=\"$PWD/_flutter_sdk/bin:$PATH\" && flutter doctor && flutter pub get && flutter build web --release"
+  publish = "build/web"
+
+[build.environment]
+  # Silence Flutter's analytics prompt during CI builds
+  CI = "true"
+
+# Flutter web is a single-page app; send all routes to index.html
+# so client-side navigation (e.g. /login, /home) doesn't 404 on refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

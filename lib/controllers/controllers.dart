@@ -7,7 +7,6 @@ import '../services/firestore_service.dart';
 import '../services/fruit_analysis_service.dart';
 import '../services/health_recommendations_service.dart';
 import '../services/openfoodfacts_service.dart';
-import 'dart:typed_data';
 
 // ======================== AUTH CONTROLLER ========================
 class AuthController extends ChangeNotifier {
@@ -160,6 +159,7 @@ class FruitController extends ChangeNotifier {
   final FirestoreService _firestoreService;
   Map<String, dynamic>? _analysisResult;
   List<NutritionRecommendation> _recommendations = [];
+  Map<String, dynamic>? _sugarVerdict;
   bool _isAnalyzing = false;
   String? _error;
 
@@ -168,6 +168,7 @@ class FruitController extends ChangeNotifier {
 
   Map<String, dynamic>? get analysisResult => _analysisResult;
   List<NutritionRecommendation> get recommendations => _recommendations;
+  Map<String, dynamic>? get sugarVerdict => _sugarVerdict;
   bool get isAnalyzing => _isAnalyzing;
   String? get error => _error;
 
@@ -198,6 +199,10 @@ class FruitController extends ChangeNotifier {
       _recommendations = HealthRecommendationsService.getFruitRecommendations(
         fruitName,
         sugarData,
+        health,
+      );
+      _sugarVerdict = HealthRecommendationsService.getSugarVerdict(
+        sugarData['totalSugarG'] ?? 0.0,
         health,
       );
 
@@ -235,6 +240,7 @@ class ProductController extends ChangeNotifier {
   final FirestoreService _firestoreService;
   ProductScan? _productScan;
   List<NutritionRecommendation> _recommendations = [];
+  Map<String, dynamic>? _sugarVerdict;
   bool _isLoading = false;
   String? _error;
 
@@ -243,6 +249,7 @@ class ProductController extends ChangeNotifier {
 
   ProductScan? get productScan => _productScan;
   List<NutritionRecommendation> get recommendations => _recommendations;
+  Map<String, dynamic>? get sugarVerdict => _sugarVerdict;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -263,6 +270,10 @@ class ProductController extends ChangeNotifier {
         _productScan = existing;
         _recommendations = HealthRecommendationsService.getProductRecommendations(
           existing,
+          health,
+        );
+        _sugarVerdict = HealthRecommendationsService.getSugarVerdict(
+          existing.sugarG,
           health,
         );
         _isLoading = false;
@@ -298,6 +309,10 @@ class ProductController extends ChangeNotifier {
       _productScan = scan;
       _recommendations = HealthRecommendationsService.getProductRecommendations(
         scan,
+        health,
+      );
+      _sugarVerdict = HealthRecommendationsService.getSugarVerdict(
+        scan.sugarG,
         health,
       );
 

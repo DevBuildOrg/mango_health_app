@@ -109,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Select all that apply. We'll give personalized advice.',
+              "Select all that apply. We'll give personalized advice.",
               style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 24),

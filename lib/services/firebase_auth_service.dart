@@ -1,6 +1,6 @@
 // lib/services/firebase_auth_service.dart
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import '../models/models.dart';
 
 class FirebaseAuthService {

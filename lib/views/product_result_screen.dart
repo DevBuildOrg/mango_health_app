@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/controllers.dart';
+import 'widgets/sweetness_verdict_card.dart';
 
 class ProductResultScreen extends StatelessWidget {
   const ProductResultScreen({super.key});
@@ -44,7 +45,7 @@ class ProductResultScreen extends StatelessWidget {
                   Container(
                     height: 180,
                     color: Colors.grey[300],
-                    child: const Icon(Icons.package_2),
+                    child: const Icon(Icons.inventory_2),
                   ),
                 const SizedBox(height: 16),
 
@@ -77,7 +78,13 @@ class ProductResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Nutrition facts
+                // "Is this too sweet for me?" — the answer people actually want first
+                if (productCtrl.sugarVerdict != null) ...[
+                  SweetnessVerdictCard(verdict: productCtrl.sugarVerdict!),
+                  const SizedBox(height: 16),
+                ],
+
+                // Nutrition facts (details, for anyone who wants the numbers)
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
