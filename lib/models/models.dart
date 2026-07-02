@@ -298,6 +298,7 @@ class DailyIntake {
             'sodium_mg': 1500, // restrictive but effective
             'potassium_mg': 3500, // help offset sodium
             'saturated_fat_g': 13, // <7% of 2000 cal
+            'sugar_g': 36, // AHA general limit; watch added sugars too
             'calories_kcal': 2000,
           },
         );
@@ -310,6 +311,7 @@ class DailyIntake {
             'cholesterol_mg': 200,
             'sodium_mg': 2000,
             'fiber_g': 30,
+            'sugar_g': 25, // AHA recommendation for heart health
           },
         );
       case HealthCondition.kidney:
@@ -320,6 +322,7 @@ class DailyIntake {
             'potassium_mg': 2000,
             'phosphorus_mg': 800,
             'sodium_mg': 2000,
+            'sugar_g': 25, // keep simple sugars modest
           },
         );
       case HealthCondition.celiac:
@@ -329,6 +332,7 @@ class DailyIntake {
             'gluten_ppm': 0, // absolute zero
             'fiber_g': 25,
             'calories_kcal': 2000,
+            'sugar_g': 50, // general guideline; gluten is the real concern
           },
         );
       default:
@@ -340,6 +344,7 @@ class DailyIntake {
             'protein_g': 50,
             'fat_g': 65,
             'fiber_g': 25,
+            'sugar_g': 50, // WHO upper limit for general population
           },
         );
     }

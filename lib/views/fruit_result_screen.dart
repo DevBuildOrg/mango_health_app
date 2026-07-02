@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/controllers.dart';
+import 'widgets/sweetness_verdict_card.dart';
 
 class FruitResultScreen extends StatelessWidget {
   final Uint8List imageBytes;
@@ -57,7 +58,13 @@ class FruitResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Sweetness card
+                // "Is this too sweet for me?" — the answer people actually want first
+                if (fruitCtrl.sugarVerdict != null) ...[
+                  SweetnessVerdictCard(verdict: fruitCtrl.sugarVerdict!),
+                  const SizedBox(height: 16),
+                ],
+
+                // Sweetness card (details, for anyone who wants the numbers)
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -65,8 +72,8 @@ class FruitResultScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Sweetness & Nutrition',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          'Sugar details',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 12),
                         _StatRow('Brix (Sugar %):', '${result['sugar']['brix']}°'),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/controllers.dart';
-import '../models/models.dart';
 import 'fruit_result_screen.dart';
 import 'product_result_screen.dart';
 
@@ -41,26 +40,28 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: const Text('Profile'),
-                onTap: () => Navigator.pushNamed(context, '/profile'),
-              ),
-              PopupMenuItem(
-                child: const Text('History'),
-                onTap: () => Navigator.pushNamed(context, '/history'),
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                child: const Text('Logout'),
-                onTap: () async {
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              switch (value) {
+                case 'profile':
+                  Navigator.pushNamed(context, '/profile');
+                  break;
+                case 'history':
+                  Navigator.pushNamed(context, '/history');
+                  break;
+                case 'logout':
                   await context.read<AuthController>().logout();
                   if (context.mounted) {
                     Navigator.of(context).pushReplacementNamed('/login');
                   }
-                },
-              ),
+                  break;
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem<String>(value: 'profile', child: Text('Profile')),
+              PopupMenuItem<String>(value: 'history', child: Text('History')),
+              PopupMenuDivider(),
+              PopupMenuItem<String>(value: 'logout', child: Text('Logout')),
             ],
           ),
         ],
@@ -137,6 +138,8 @@ class _FruitScanTab extends StatelessWidget {
     if (pickedFile == null || !context.mounted) return;
 
     final bytes = await pickedFile.readAsBytes();
+    if (!context.mounted) return;
+
     final authCtrl = context.read<AuthController>();
     final healthCtrl = context.read<HealthController>();
     final fruitCtrl = context.read<FruitController>();
@@ -154,7 +157,9 @@ class _FruitScanTab extends StatelessWidget {
       healthCtrl.healthProfile!,
     );
 
-    if (success && context.mounted) {
+    if (!context.mounted) return;
+
+    if (success) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -289,7 +294,9 @@ class _ProductScanTab extends StatelessWidget {
       healthCtrl.healthProfile!,
     );
 
-    if (success && context.mounted) {
+    if (!context.mounted) return;
+
+    if (success) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ProductResultScreen()),
